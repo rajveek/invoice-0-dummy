@@ -19,7 +19,7 @@ export default function InvoiceBoard() {
     mailStatus: null,
     page: 1,
   });
-  const [totalorders, setorderno] = useState(0);
+  // const [totalorders, setorderno] = useState(0);
   const [headNavFlag, setheadNavFlag] = useState(false);
   const [selectedInvoices, setselectedInvoices] = useState(0);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
@@ -36,12 +36,17 @@ export default function InvoiceBoard() {
       },
     }
   );
-  const { data: countno } = useQuery(["total-count"], getOrderCount, {
-    staleTime: Infinity,
-    onSuccess: (countno) => {
-      console.log("total orders", countno.data["totalInvoices"]);
-      setorderno(countno.data["totalInvoices"]);
+  const {
+    data: {
+      data: { totalInvoices },
     },
+  } = useQuery(["total-count"], getOrderCount, {
+    staleTime: Infinity,
+    suspense: true,
+    // onSuccess: (countno) => {
+    //   console.log("total orders", countno.data["totalInvoices"]);
+    //   setorderno(countno.data["totalInvoices"]);
+    // },
   });
   function onfilterchange(newfilter) {
     setFilters({ ...filters, ...newfilter });
@@ -52,7 +57,7 @@ export default function InvoiceBoard() {
         onChange={onfilterchange}
         filters={filters}
         orderdata={orderdata}
-        totalorders={totalorders}
+        totalorders={totalInvoices}
         headNavFlag={headNavFlag}
         setheadNavFlag={setheadNavFlag}
         selectedInvoices={selectedInvoices}
@@ -65,7 +70,7 @@ export default function InvoiceBoard() {
           onChange={onfilterchange}
           filters={filters}
           orderdata={orderdata}
-          totalorders={totalorders}
+          totalorders={totalInvoices}
           headNavFlag={headNavFlag}
           setheadNavFlag={setheadNavFlag}
           selectedInvoices={selectedInvoices}

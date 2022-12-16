@@ -13,7 +13,7 @@ import like from "./like.png";
 import hands from "./download.png";
 import yes from "./yes.png";
 import no from "./no.png";
-import { NavLink } from "react-router-dom";
+import { Navigate, NavLink } from "react-router-dom";
 import { Button, Dropdown, Modal, Space, Divider } from "antd";
 import { useState } from "react";
 import { SpaceContext } from "antd/es/space";
@@ -33,6 +33,11 @@ export default function Navigator() {
   const handleCancel = () => {
     setIsModalOpen(false);
   };
+  function navtoset() {
+    // if (location.href != "/settings") {
+    //   location.href = "/settings";
+    // }
+  }
   const items = [
     {
       label: "Hindi",
@@ -50,11 +55,16 @@ export default function Navigator() {
   const menuProps = {
     items,
   };
-
+  console.log(location.href.split("/")[3]);
   return (
     <div>
       <Layout className="layout" style={{}}>
-        <Menu mode="horizontal" defaultSelectedKeys={["file"]}>
+        {/* <Menu mode="horizontal" defaultSelectedKeys={["file", "settings"]}> */}
+
+        <Menu
+          mode="horizontal"
+          defaultSelectedKeys={[location.href.split("/")[3]]}
+        >
           <div
             style={{
               display: "flex",
@@ -69,16 +79,18 @@ export default function Navigator() {
             </span>
             <b style={{ fontSize: 20 }}>Invoice Hero</b>
           </div>
-          <Menu.Item key="file" icon={<FileTextFilled />}>
+          <Menu.Item key="dashboard" icon={<FileTextFilled />}>
             <NavLink to="/dashboard">INVOICES</NavLink>
           </Menu.Item>
           <Menu.Item key="settings" icon={<SettingFilled />}>
+            {/* <a href="/settings">SETTINGS</a> */}
             <NavLink to="/settings">SETTINGS</NavLink>
           </Menu.Item>
           <Menu.Item key="support" icon={<QuestionCircleFilled />}>
             <NavLink to="/support">SUPPORT</NavLink>
           </Menu.Item>
-          <Menu.Item key="like" style={{ marginLeft: "8rem" }}>
+          {/* <Menu.Item key="like" style={{ marginLeft: "8rem" }}> */}
+          <span style={{ right: "5rem", top: 0, position: "fixed" }}>
             <span style={{ alignItems: "center" }}>
               <img src={like} onClick={showModal} />
             </span>
@@ -122,18 +134,21 @@ export default function Navigator() {
                 feedback of your experience.
               </p>
             </Modal>
-          </Menu.Item>
-          <Menu.Item key="language">
-            <Dropdown menu={menuProps}>
-              <Button>
-                <Space>
-                  <GoogleOutlined />
-                  Choose language
-                  <CaretDownFilled />
-                </Space>
-              </Button>
-            </Dropdown>
-          </Menu.Item>
+            {/* </Menu.Item>
+          <Menu.Item key="language"> */}
+            <span style={{ marginLeft: "3rem" }}>
+              <Dropdown menu={menuProps} trigger={["click"]}>
+                <Button>
+                  <Space>
+                    <GoogleOutlined />
+                    Choose language
+                    <CaretDownFilled />
+                  </Space>
+                </Button>
+              </Dropdown>
+            </span>
+            {/* </Menu.Item> */}
+          </span>
         </Menu>
       </Layout>
     </div>

@@ -65,3 +65,25 @@ export const getOrderData = ({
       res.data.orderData.map((order) => ({ ...order, key: order.orderId }))
     );
 };
+
+export const mergePdfAction = (ids) => {
+  return newAxios.post("/api/order/bulk/print", { ids: ids }).then((res) => {
+    return res.data;
+  });
+};
+
+export const sendInvoiceCust = (ids) => {
+  return newAxios
+    .post("/api/order/bulk/send", { ids: ids })
+    .then(function (response) {
+      return response.data;
+    });
+};
+
+export const sendInvoiceMe = (ids) => {
+  return newAxios
+    .post("/api/order/bulk", { ids: ids })
+    .then(function (response) {
+      return response.data;
+    });
+};

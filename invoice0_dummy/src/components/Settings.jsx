@@ -11,6 +11,7 @@ import design from "./design.png";
 import billing from "./billing.png";
 import company from "./company.png";
 import pricing from "./pricing.png";
+import { NavLink } from "react-router-dom";
 
 export default function Settings_page() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -150,7 +151,8 @@ export default function Settings_page() {
               <img src={currency} />
               <figcaption>
                 {" "}
-                <a href="">Currency</a>{" "}
+                {/* <a href="/settings/currency-settings">Currency</a>{" "} */}
+                <NavLink to="/settings/currency-settings">Currency</NavLink>
               </figcaption>
             </figure>
           </div>
@@ -211,7 +213,12 @@ export default function Settings_page() {
               <img src={pricing} />
               <figcaption>
                 {" "}
-                <a href="">Pricing</a>{" "}
+                {/* <a href="/pricing?utm_source=dashboard&utm_medium=user&utm_campaign=settings">
+                  Pricing
+                </a>{" "} */}
+                <NavLink to="/pricing?utm_source=dashboard&utm_medium=user&utm_campaign=settings">
+                  Pricing
+                </NavLink>
               </figcaption>
             </figure>
           </div>

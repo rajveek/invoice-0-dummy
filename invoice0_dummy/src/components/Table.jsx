@@ -20,7 +20,7 @@ export default function TableData({
       key: "1",
     },
     {
-      label: "Send the invoice to the customer",
+      label: "Resend the invoice to the customer",
       key: "2",
     },
     {
@@ -60,13 +60,8 @@ export default function TableData({
     {
       title: "Invoice",
       dataIndex: "orderNum",
-      key: "orderNum",
-      sorter: (a, b, sortOrder) => {
-        onChange({
-          sortBy: "orderNo",
-          OrderBy: sortOrder === "descend" ? "desc" : "asc",
-        });
-      },
+      key: "orderNo",
+      sorter: true,
       sortDirections: ["descend", "ascend"],
 
       render: (_, record) => (
@@ -83,13 +78,8 @@ export default function TableData({
     {
       title: "Order",
       dataIndex: "shopifyOrderNum",
-      key: "shopifyOrderNum",
-      sorter: (a, b, sortOrder) => {
-        onChange({
-          sortBy: "shopifyOrderNo",
-          OrderBy: sortOrder === "descend" ? "desc" : "asc",
-        });
-      },
+      key: "shopifyOrderNo",
+      sorter: true,
       sortDirections: ["descend", "ascend"],
       render: (_, record) => (
         <div style={{ color: "#4D5055" }}>
@@ -105,12 +95,7 @@ export default function TableData({
       title: "Date",
       dataIndex: "invoiceDate",
       key: "invoiceDate",
-      sorter: (a, b, sortOrder) => {
-        onChange({
-          sortBy: "invoiceDate",
-          OrderBy: sortOrder === "descend" ? "desc" : "asc",
-        });
-      },
+      sorter: true,
       sortDirections: ["descend", "ascend"],
       render: (_, record) => {
         let arr = new Date(record.invoiceDate).toDateString().split(" ");
@@ -126,13 +111,7 @@ export default function TableData({
       title: "Name",
       dataIndex: "customerName",
       key: "customerName",
-      key: "shopifyOrderNum",
-      sorter: (a, b, sortOrder) => {
-        onChange({
-          sortBy: "shopifyOrderNo",
-          OrderBy: sortOrder === "descend" ? "desc" : "asc",
-        });
-      },
+      sorter: true,
       sortDirections: ["descend", "ascend"],
       render: (_, record) => (
         <div style={{ color: "#4D5055" }}>
@@ -143,25 +122,15 @@ export default function TableData({
     {
       title: "Total",
       dataIndex: "totalAmount",
-      key: "totalAmount",
-      sorter: (a, b, sortOrder) => {
-        onChange({
-          sortBy: "total",
-          OrderBy: sortOrder === "descend" ? "desc" : "asc",
-        });
-      },
+      key: "total",
+      sorter: true,
       sortDirections: ["descend", "ascend"],
     },
     {
       title: "Payment",
       dataIndex: "paymentStatus",
       key: "paymentStatus",
-      sorter: (a, b, sortOrder) => {
-        onChange({
-          sortBy: "paymentStatus",
-          OrderBy: sortOrder === "descend" ? "desc" : "asc",
-        });
-      },
+      sorter: true,
       sortDirections: ["descend", "ascend"],
       render: (_, record) => (
         <div style={{}}>
@@ -197,12 +166,7 @@ export default function TableData({
       title: "Fulfillment",
       dataIndex: "fulfillmentStatus",
       key: "fulfillmentStatus",
-      sorter: (a, b, sortOrder) => {
-        onChange({
-          sortBy: "fulfillmentStatus",
-          OrderBy: sortOrder === "descend" ? "desc" : "asc",
-        });
-      },
+      sorter: true,
       sortDirections: ["descend", "ascend"],
       render: (_, record) => (
         <div style={{}}>
@@ -238,12 +202,7 @@ export default function TableData({
       title: "Status",
       dataIndex: "status",
       key: "status",
-      sorter: (a, b, sortOrder) => {
-        onChange({
-          sortBy: "status",
-          OrderBy: sortOrder === "descend" ? "desc" : "asc",
-        });
-      },
+      sorter: true,
       sortDirections: ["descend", "ascend"],
       render: (_, record) => (
         <div style={{}}>
@@ -298,7 +257,7 @@ export default function TableData({
               }}
             > */}
             <Space>
-              <span style={{ color: "#00a2ff" }}>More</span>
+              <span style={{ color: "#00a2ff" }}>Actions</span>
               <CaretDownFilled style={{ color: "#00a2ff" }} />
             </Space>
             {/* </Button> */}
@@ -324,6 +283,17 @@ export default function TableData({
           columns={columns}
           dataSource={orderdata}
           showSorterTooltip={false}
+          onChange={(pagination, filters, sorter) => {
+            const obj = {};
+            if (sorter.columnKey) {
+              obj.sortBy = sorter.columnKey;
+              obj.OrderBy = sorter.order === "descend" ? "desc" : "asc";
+            }
+            if (pagination.current != null) {
+              obj.page = pagination.current;
+            }
+            onChange(obj);
+          }}
           pagination={{
             pageSize: parseInt(filters.limit),
             total: parseInt(totalorders),
