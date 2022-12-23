@@ -2,12 +2,9 @@ import { Layout, Menu, Button } from "antd";
 import { useState } from "react";
 import icon from "./icon.png";
 
-export default function SettingsNavbar({ navflag, setnavflag }) {
-  function discard() {
-    setnavflag(true);
-  }
+export default function SettingsNavbar({ style }) {
   return (
-    <div>
+    <div style={style}>
       <Layout className="layout">
         <Menu mode="horizontal" style={{ height: "3.7rem" }}>
           <div
@@ -35,10 +32,10 @@ export default function SettingsNavbar({ navflag, setnavflag }) {
           </h3>
           <div style={{ right: "0", position: "absolute" }}>
             {" "}
-            <Button shape="round" type="default" onClick={discard}>
+            <Button shape="round" type="default" htmlType="reset">
               Discard
             </Button>{" "}
-            <Button shape="round" type="primary">
+            <Button shape="round" type="primary" htmlType="submit">
               Save
             </Button>
           </div>

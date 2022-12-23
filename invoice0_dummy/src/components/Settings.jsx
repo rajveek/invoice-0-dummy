@@ -118,7 +118,8 @@ export default function Settings_page() {
               <img src={tax} />
               <figcaption>
                 {" "}
-                <a href="">Tax</a>{" "}
+                {/* <a href="">Tax</a>{" "} */}
+                <NavLink to="/settings/tax-settings">Tax </NavLink>
               </figcaption>
             </figure>
           </div>
@@ -198,7 +199,8 @@ export default function Settings_page() {
               <img src={company} />
               <figcaption>
                 {" "}
-                <a href="">Company</a>{" "}
+                {/* <a href="">Company</a>{" "} */}
+                <NavLink to="/settings/company-details">Company </NavLink>
               </figcaption>
             </figure>
           </div>

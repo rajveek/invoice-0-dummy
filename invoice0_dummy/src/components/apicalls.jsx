@@ -87,3 +87,13 @@ export const sendInvoiceMe = (ids) => {
       return response.data;
     });
 };
+
+export const setInvoiceCurrency = (value) => {
+  return newAxios
+    .put("/api/settings", { invoiceSettings: { generateInvoiceOn: value } })
+    .then(function (response) {
+      return response.data;
+    });
+};
+
+export const getSettingsData = () => newAxios.get("/api/settings");

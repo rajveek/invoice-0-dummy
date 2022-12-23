@@ -8,6 +8,8 @@ import Support from "./components/Support";
 import InvoiceBoard from "./components/InvoiceBoard";
 import PricingPage from "./components/PricingPlans";
 import CurrencyPage from "./components/CurrencyPage";
+import TaxPage from "./components/Taxpage";
+import CompanyPage from "./components/CompanyPage";
 
 function App() {
   return (
@@ -18,6 +20,8 @@ function App() {
         <Route path="/support" element={<Support />} />
         <Route path="/pricing" element={<PricingPage />} />
         <Route path="/settings/currency-settings" element={<CurrencyPage />} />
+        <Route path="/settings/tax-settings" element={<TaxPage />} />
+        <Route path="/settings/company-details" element={<CompanyPage />} />
         <Route path="/" element={<Navigate to="/dashboard" />} />
       </Routes>
     </div>
