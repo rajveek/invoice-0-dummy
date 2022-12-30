@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import SettingsNavbar from "./SettingsNavbar";
-import { getSettingsData, setInvoiceCurrency } from "./apicalls";
+import { getSettingsData, setSettingsData } from "./apicalls";
 import { useMutation } from "@tanstack/react-query";
 
 export default function CurrencyPage() {
@@ -25,7 +25,7 @@ export default function CurrencyPage() {
     },
   });
 
-  const invoiceCurrencyMutate = useMutation(setInvoiceCurrency, {
+  const invoiceCurrencyMutate = useMutation(setSettingsData, {
     onSuccess: (data) => {
       console.log(data);
       setinitalvalues({
@@ -53,13 +53,15 @@ export default function CurrencyPage() {
   // }
   function onfinish(values) {
     console.log(values);
-    invoiceCurrencyMutate.mutate(values.currency_form);
+    const data = {
+      invoiceSettings: { generateInvoiceOn: values.currency_form },
+    };
+    invoiceCurrencyMutate.mutate(data);
   }
 
   return (
     <>
       <Form initialValues={initalvalues} onFinish={onfinish} form={form}>
-        <Navigator />
         <Form.Item noStyle shouldUpdate>
           {(form) => {
             console.log(form.isFieldsTouched());
@@ -69,13 +71,14 @@ export default function CurrencyPage() {
             }
             return (
               <SettingsNavbar
-                style={{ color: "blue" }}
+                style={{ color: "blue", zIndex: 1, position: "absolute" }}
                 //  style={{ position: "absolute" }}
                 //loading={currencyformat.isLoading}
               />
             );
           }}
         </Form.Item>
+        <Navigator />
 
         {/* {navflag ? (
           <Navigator />

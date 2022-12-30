@@ -6,37 +6,127 @@ import {
   Space,
   Card,
   Input,
-  Checkbox,
   Upload,
+  message,
 } from "antd";
 import { ArrowLeftOutlined, UploadOutlined } from "@ant-design/icons";
 import Navigator from "./Navigation";
-import { getSettingsData } from "./apicalls";
+import { getSettingsData, setSettingsData } from "./apicalls";
+import SettingsNavbar from "./SettingsNavbar";
 import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+
 export default function CompanyPage() {
+  const [initialValues, setinitialValues] = useState({});
   const [form] = Form.useForm();
   const { TextArea } = Input;
   const navigate = useNavigate();
+
   function goBack() {
     navigate("/settings");
   }
+
+  const beforeUpload = (file) => {
+    const isJpgOrPng =
+      file.type === "image/jpeg" ||
+      file.type === "image/png" ||
+      file.type === "image/jpg" ||
+      file.type === "image/gif";
+    if (!isJpgOrPng) {
+      message.error("You can only upload JPG/PNG file!");
+    }
+    console.log("files size", file.size);
+    const isLt2M = file.size / 1000 < 100;
+    if (!isLt2M) {
+      message.error("Image must smaller than 2MB!");
+    }
+    return isJpgOrPng && isLt2M;
+  };
+
   function onfinish(values) {
     console.log(values);
+    values.logo = values.logo.file ? values.logo.file.thumbUrl : values.logo;
+    if (!values.logo) {
+      //console.log("undefined");
+      values.logo = "";
+    }
+
+    const data = {
+      companyDetails: {
+        address: {
+          address1: values.address1,
+          address2: values.address2,
+          city: values.city,
+          country: values.country,
+          postcode: values.postcode,
+          state: values.state,
+        },
+        brandName: values.brandName,
+        email: values.email,
+        legalNameForBusiness: values.legalNameForBusiness,
+        logo: values.logo,
+        phone: values.phone,
+        website: values.website,
+      },
+    };
+    companyMutate.mutate(data);
   }
   const { data: settingsdata } = useQuery(["settings-data"], getSettingsData, {
-    // staleTime: Infinity,
-    // keepPreviousData: true,
+    staleTime: Infinity,
     onSuccess: (settingsdata) => {
-      console.log("settings data", settingsdata);
-      //   setinitalvalues({
-      //     currency_form: settingsdata.data.invoiceSettings.generateInvoiceOn,
-      //   });
+      //console.log("settings data", settingsdata);
+      setinitialValues({
+        brandName: settingsdata?.companyDetails.brandName,
+        email: settingsdata?.companyDetails.email,
+        address1: settingsdata?.companyDetails.address.address1,
+        address2: settingsdata?.companyDetails.address.address2,
+        phone: settingsdata?.companyDetails.phone,
+        website: settingsdata?.companyDetails.website,
+        logo: settingsdata?.companyDetails.logo,
+        legalNameForBusiness: settingsdata?.companyDetails.legalNameForBusiness,
+        city: settingsdata?.companyDetails.address.city,
+        postcode: settingsdata?.companyDetails.address.postcode,
+        country: settingsdata?.companyDetails.address.country,
+        state: settingsdata?.companyDetails.address.state,
+      });
     },
   });
-  console.log("data", settingsdata);
+  console.log("initial values", initialValues);
+
+  useEffect(() => {
+    form.resetFields();
+  }, [initialValues]);
+
+  const companyMutate = useMutation(setSettingsData, {
+    // onSuccess: (data) => {
+    //   console.log(data);
+    // },
+  });
+
   return (
     <>
-      <Form onFinish={onfinish} form={form}>
+      <Form
+        onFinish={onfinish}
+        form={form}
+        initialValues={initialValues}
+        layout="vertical"
+      >
+        <Form.Item noStyle shouldUpdate>
+          {(form) => {
+            console.log(form.isFieldsTouched());
+            const isFormchanged = form.isFieldsTouched();
+            if (!isFormchanged) {
+              return null;
+            }
+            return (
+              <SettingsNavbar
+                style={{ color: "blue", zIndex: 1, position: "absolute" }}
+              />
+            );
+          }}
+        </Form.Item>
         <div style={{ color: "#4d5055", textAlign: "left" }}>
           <Navigator />
           <div
@@ -69,67 +159,87 @@ export default function CompanyPage() {
               Choose what information you want to show in the company details
             </p>
             <Card>
-              Brand className
-              <Form.Item>
-                <Input value={settingsdata?.data.companyDetails.brandName} />
+              <Form.Item label="Brand className" name="brandName">
+                <Input value={initialValues.brandName} />
               </Form.Item>
-              Legal name of business
-              <Form.Item>
-                <Input />
+
+              <Form.Item
+                label="Legal name of business"
+                name="legalNameForBusiness"
+              >
+                <Input value={initialValues.legalNameForBusiness} />
               </Form.Item>
-              Company website
-              <Form.Item>
-                <Input />
+
+              <Form.Item label="Company website" name="website">
+                <Input value={initialValues.website} />
               </Form.Item>
-              Company support email id
-              <Form.Item>
-                <Input value={settingsdata?.data.companyDetails.email} />
+
+              <Form.Item label="Company support email id" name="email">
+                <Input value={initialValues.email} />
               </Form.Item>
-              <p>Upload your logo (optional)</p>
-              <Upload>
-                <Button shape="round"> Upload</Button>
-              </Upload>
-              <text style={{ color: "#4d5055" }}>
-                png, jpeg, jpg, gif having max 250x125px (100KB limit)
-              </text>
-              Phone
-              <Form.Item>
-                <Input />
+              {/* <Form.Item label="Upload your logo (optional)" name="logo">
+                <Upload maxCount={1} value={initialValues.logo}>
+                  <Button shape="round"> Upload</Button>
+                </Upload>
+                <text style={{ color: "#4d5055" }}>
+                  png, jpeg, jpg, gif having max 250x125px (100KB limit)
+                </text>
+              </Form.Item> */}
+              <Form.Item
+                name="logo"
+                label="Upload your logo (optional)"
+                extra="png, jpeg, jpg, gif having max 250x125px (100KB limit)"
+                style={{ fontWeight: "bold" }}
+              >
+                <Upload
+                  name="upload"
+                  listType="picture"
+                  defaultFileList={
+                    initialValues.logo !== "" &&
+                    initialValues.logo !== undefined &&
+                    initialValues.logo !== null
+                      ? [{ url: initialValues.logo }]
+                      : []
+                  }
+                  maxCount={1}
+                  beforeUpload={beforeUpload}
+                >
+                  <Button icon={<UploadOutlined />}>Upload</Button>
+                </Upload>
               </Form.Item>
-              Street
-              <Form.Item>
-                <Input />
+
+              <Form.Item label="Phone" name="phone">
+                <Input value={initialValues.phone} />
               </Form.Item>
-              Apartment, suite, etc. (optional)
-              <Form.Item>
-                <Input
-                  value={settingsdata?.data.companyDetails.address.address1}
-                />
+
+              <Form.Item label="Street" name="address2">
+                <Input value={initialValues.address2} />
               </Form.Item>
-              City
-              <Form.Item>
-                <Input value={settingsdata?.data.companyDetails.address.city} />
+
+              <Form.Item
+                label="Apartment, suite, etc. (optional)"
+                name="address1"
+              >
+                <Input value={initialValues.address1} />
               </Form.Item>
-              Postal/Zip code
-              <Form.Item>
-                <Input
-                  value={settingsdata?.data.companyDetails.address.postcode}
-                />
+
+              <Form.Item label="City" name="city">
+                <Input value={initialValues.city} />
               </Form.Item>
-              Country/Region
-              <Form.Item>
-                <Input
-                  value={settingsdata?.data.companyDetails.address.country}
-                />
+
+              <Form.Item label="Postal/Zip code" name="postcode">
+                <Input value={initialValues.postcode} />
               </Form.Item>
-              State
-              <Form.Item>
-                <Input
-                  value={settingsdata?.data.companyDetails.address.state}
-                />
+
+              <Form.Item label="Country/Region" name="country">
+                <Input value={initialValues.country} />
               </Form.Item>
-              Additional Info
-              <Form.Item>
+
+              <Form.Item label="State" name="state">
+                <Input value={initialValues.state} />
+              </Form.Item>
+
+              <Form.Item label="Additional Info">
                 <TextArea rows={4} />
               </Form.Item>
             </Card>

@@ -4,7 +4,7 @@ import icon from "./icon.png";
 
 export default function SettingsNavbar({ style }) {
   return (
-    <div style={style}>
+    <div style={{ width: "100%", zIndex: 1, position: "absolute" }}>
       <Layout className="layout">
         <Menu mode="horizontal" style={{ height: "3.7rem" }}>
           <div

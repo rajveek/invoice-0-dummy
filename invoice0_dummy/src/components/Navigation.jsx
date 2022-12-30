@@ -55,7 +55,7 @@ export default function Navigator() {
   const menuProps = {
     items,
   };
-  console.log(location.href.split("/")[3]);
+  //console.log(location.href.split("/")[3]);
   return (
     <div>
       <Layout className="layout" style={{}}>
