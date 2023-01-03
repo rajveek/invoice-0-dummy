@@ -20,6 +20,7 @@ import { useMutation } from "@tanstack/react-query";
 
 export default function CompanyPage() {
   const [initialValues, setinitialValues] = useState({});
+  const [msgerror, setmsgerror] = useState("");
   const [form] = Form.useForm();
   const { TextArea } = Input;
   const navigate = useNavigate();
@@ -36,14 +37,21 @@ export default function CompanyPage() {
       file.type === "image/gif";
     if (!isJpgOrPng) {
       message.error("You can only upload JPG/PNG file!");
+      setmsgerror("You can only upload JPG/PNG file!");
+    } else {
+      setmsgerror("");
     }
     console.log("files size", file.size);
     const isLt2M = file.size / 1000 < 100;
     if (!isLt2M) {
-      message.error("Image must smaller than 2MB!");
+      message.error("Image must smaller than 100kb");
+      setmsgerror("Image must smaller than 100kb");
+    } else {
+      setmsgerror("");
     }
     return isJpgOrPng && isLt2M;
   };
+  console.log("msgerror is :", msgerror);
 
   function onfinish(values) {
     console.log(values);
@@ -95,15 +103,29 @@ export default function CompanyPage() {
   });
   console.log("initial values", initialValues);
 
+  const companyMutate = useMutation(setSettingsData, {
+    onSuccess: (settingsdata) => {
+      //console.log("settings data", settingsdata);
+      setinitialValues({
+        brandName: settingsdata?.companyDetails.brandName,
+        email: settingsdata?.companyDetails.email,
+        address1: settingsdata?.companyDetails.address.address1,
+        address2: settingsdata?.companyDetails.address.address2,
+        phone: settingsdata?.companyDetails.phone,
+        website: settingsdata?.companyDetails.website,
+        logo: settingsdata?.companyDetails.logo,
+        legalNameForBusiness: settingsdata?.companyDetails.legalNameForBusiness,
+        city: settingsdata?.companyDetails.address.city,
+        postcode: settingsdata?.companyDetails.address.postcode,
+        country: settingsdata?.companyDetails.address.country,
+        state: settingsdata?.companyDetails.address.state,
+      });
+    },
+  });
+
   useEffect(() => {
     form.resetFields();
   }, [initialValues]);
-
-  const companyMutate = useMutation(setSettingsData, {
-    // onSuccess: (data) => {
-    //   console.log(data);
-    // },
-  });
 
   return (
     <>
@@ -113,7 +135,7 @@ export default function CompanyPage() {
         initialValues={initialValues}
         layout="vertical"
       >
-        <Form.Item noStyle shouldUpdate>
+        {/* <Form.Item noStyle shouldUpdate>
           {(form) => {
             console.log(form.isFieldsTouched());
             const isFormchanged = form.isFieldsTouched();
@@ -125,6 +147,16 @@ export default function CompanyPage() {
                 style={{ color: "blue", zIndex: 1, position: "absolute" }}
               />
             );
+          }}
+        </Form.Item> */}
+        <Form.Item noStyle shouldUpdate>
+          {(form) => {
+            console.log(form, form.isFieldsTouched());
+            const isFormchanged = form.isFieldsTouched();
+            if (!isFormchanged) {
+              return null;
+            }
+            return <SettingsNavbar style={{}} />;
           }}
         </Form.Item>
         <div style={{ color: "#4d5055", textAlign: "left" }}>
@@ -194,6 +226,7 @@ export default function CompanyPage() {
                 <Upload
                   name="upload"
                   listType="picture"
+                  showUploadList={msgerror == "" ? true : false}
                   defaultFileList={
                     initialValues.logo !== "" &&
                     initialValues.logo !== undefined &&

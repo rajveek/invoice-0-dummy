@@ -10,11 +10,48 @@ import { setSettingsData } from "./apicalls";
 import SettingsNavbar from "./SettingsNavbar";
 
 export default function TaxPage() {
-  const [initialValues, setinitialValues] = useState({});
   const { data: settingsdata } = useQuery(["settings-data"], getSettingsData, {
     staleTime: Infinity,
+    // onSuccess: (settingsdata) => {
+    //   console.log("settings data", settingsdata);
+    //   setinitialValues({
+    //     isShowTax: settingsdata?.invoiceSettings.isShowTax,
+    //     isShowIndividualTax: settingsdata?.invoiceSettings.isShowIndividualTax,
+    //     isShowCustomerVatNumber:
+    //       settingsdata?.invoiceSettings.isShowCustomerVatNumber,
+    //     //taxNumber: settingsdata?.companyDetails.taxNumber,
+    //     customerVatNumberLabel:
+    //       settingsdata?.invoiceSettings.customerVatNumberLabel,
+    //     isShowEmptyTaxInSummary:
+    //       !settingsdata?.invoiceSettings.isShowEmptyTaxInSummary,
+    //   });
+    // },
+  });
+  const [initialValues, setinitialValues] = useState({
+    isShowTax: settingsdata?.invoiceSettings.isShowTax,
+    isShowIndividualTax: settingsdata?.invoiceSettings.isShowIndividualTax,
+    isShowCustomerVatNumber:
+      settingsdata?.invoiceSettings.isShowCustomerVatNumber,
+    taxNumber: settingsdata?.companyDetails.taxNumber,
+    customerVatNumberLabel:
+      settingsdata?.invoiceSettings.customerVatNumberLabel,
+    isShowEmptyTaxInSummary:
+      !settingsdata?.invoiceSettings.isShowEmptyTaxInSummary,
+  });
+  console.log("initialValues", initialValues);
+  const [form] = Form.useForm();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    form.resetFields();
+  }, [initialValues]);
+  function goBack() {
+    navigate("/settings");
+  }
+
+  const TaxMutate = useMutation(setSettingsData, {
     onSuccess: (settingsdata) => {
-      console.log("settings data", settingsdata);
+      //console.log("settings data", settingsdata);
       setinitialValues({
         isShowTax: settingsdata?.invoiceSettings.isShowTax,
         isShowIndividualTax: settingsdata?.invoiceSettings.isShowIndividualTax,
@@ -28,20 +65,9 @@ export default function TaxPage() {
       });
     },
   });
-
-  console.log(initialValues);
-  const [form] = Form.useForm();
-  const navigate = useNavigate();
-
-  // useEffect(() => {
-  //   form.resetFields();
-  // }, [initialValues]);
-  function goBack() {
-    navigate("/settings");
-  }
   function onfinish(values) {
-    console.log(values);
-    data = {
+    console.log("values", values);
+    const data = {
       companyDetails: { taxNumber: values.taxNumber },
       invoiceSettings: {
         isShowTax: values.isShowTax,
@@ -53,12 +79,6 @@ export default function TaxPage() {
     };
     TaxMutate.mutate(data);
   }
-  const TaxMutate = useMutation(setSettingsData, {
-    onSuccess: (data) => {
-      //console.log(data);
-    },
-  });
-  //console.log("aaaaaa", settingsdata);
   return (
     <>
       <Form
@@ -135,27 +155,39 @@ export default function TaxPage() {
               details
             </p>
             <Card>
-              <Form.Item
+              {/* <Form.Item
                 name="taxNumber"
                 label=" Tax type and Tax number of your company"
                 style={{ fontWeight: "bold" }}
               >
                 <Input value={initialValues.taxNumber} />
+              </Form.Item> */}
+              <Form.Item
+                label="Tax type and Tax number of your company"
+                style={{ fontWeight: "bold" }}
+                name="taxNumber"
+              >
+                <Input value={initialValues.taxNumber} />
               </Form.Item>
-              Include your tax type along with your tax number. Better to use
-              GST 12345 or VAT 12345 instead of 12345.
+              <span>
+                Include your tax type along with your tax number. Better to use
+                GST 12345 or VAT 12345 instead of 12345.
+              </span>
               <Space direction="vertical">
-                <Form.Item name="isShowTax">
+                <Form.Item name="isShowTax" valuePropName="checked">
                   <Checkbox defaultChecked={initialValues.isShowTax}>
                     Show tax for each product
                   </Checkbox>
                 </Form.Item>
-                <Form.Item name="isShowIndividualTax">
+                <Form.Item name="isShowIndividualTax" valuePropName="checked">
                   <Checkbox defaultChecked={initialValues.isShowIndividualTax}>
                     Show individual tax details (if multiple taxes are applied)
                   </Checkbox>
                 </Form.Item>
-                <Form.Item name="isShowEmptyTaxInSummary">
+                <Form.Item
+                  name="isShowEmptyTaxInSummary"
+                  valuePropName="checked"
+                >
                   <Checkbox
                     defaultChecked={initialValues.isShowEmptyTaxInSummary}
                   >
@@ -180,7 +212,7 @@ export default function TaxPage() {
               GST) number on the invoice?
             </p>
             <Card style={{ color: "#4d5055" }}>
-              <Form.Item name="isShowCustomerVatNumber">
+              <Form.Item name="isShowCustomerVatNumber" valuePropName="checked">
                 <Checkbox
                   defaultChecked={initialValues.isShowCustomerVatNumber}
                 >
